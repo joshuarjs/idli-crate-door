@@ -1,5 +1,5 @@
 /* ==================================================================================
-  Idli's Crate Door  -  v2.0.2
+  Idli's Crate Door  -  v2.0.3
 
   Motorized dog-crate door on an ESP32-C6 SuperMini.
     - Continuous-rotation MG996R servo drives the door through a worm gear and a
@@ -44,7 +44,7 @@
 #include <esp_ota_ops.h>
 #include <time.h>
 
-#define FW_VERSION "2.0.2"
+#define FW_VERSION "2.0.3"
 
 // ---- Provisioning (only used until the board joins Wi-Fi) -----------------------
 // The "PROV_" prefix is what the RainMaker app looks for when scanning.
@@ -380,14 +380,19 @@ void resetTravel() {
   Serial.println("Travel times reset - relearning over the next 5 full moves");
 }
 
-void updateMotion(uint32_t now) {
+void updateMotion() {
   if (motion != M_MOVING) return;
+
+  // Read the clock here rather than using the loop's "now": a move started
+  // earlier in this same loop pass sets moveStart after "now" was taken, and
+  // now - moveStart would wrap around to a huge number and trip the timeout.
+  uint32_t elapsed = millis() - moveStart;
 
   bool arrived = (desired == OPEN) ? atOpen() : atClosed();
   if (arrived) {
     setMotor(SERVO_STOP);
     motion = M_IDLE;
-    uint32_t took = now - moveStart;
+    uint32_t took = elapsed;
     Serial.printf("Door %s in %lu ms\n", desired == OPEN ? "opened" : "closed", (unsigned long)took);
     if (moveFromLimit) learnTravel(desired, took);
     if (desired == CLOSED) closedConfirmed = true;
@@ -395,7 +400,7 @@ void updateMotion(uint32_t now) {
     return;
   }
 
-  if (now - moveStart >= moveTimeout) {
+  if (elapsed >= moveTimeout) {
     enterFault(desired == OPEN ? "jammed while opening" : "jammed while closing");
     return;
   }
@@ -845,7 +850,7 @@ void loop() {
   handleRainMakerInputs();
   updateButton(now);
   checkSwitchFault();
-  updateMotion(now);
+  updateMotion();
   updateHold(now);
   updateFaultClear();
   updateFeedPulse(now);
