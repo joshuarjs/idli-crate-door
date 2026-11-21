@@ -1,5 +1,5 @@
 /* ==================================================================================
-  Idli's Crate Door  -  v2.0.1
+  Idli's Crate Door  -  v2.0.2
 
   Motorized dog-crate door on an ESP32-C6 SuperMini.
     - Continuous-rotation MG996R servo drives the door through a worm gear and a
@@ -44,13 +44,7 @@
 #include <esp_ota_ops.h>
 #include <time.h>
 
-#define FW_VERSION "2.0.1"
-
-// On core 3.x, BLE provisioning can start in freed Bluetooth RAM unless this
-// returns true.
-bool btInUse() {
-  return true;
-}
+#define FW_VERSION "2.0.2"
 
 // ---- Provisioning (only used until the board joins Wi-Fi) -----------------------
 // The "PROV_" prefix is what the RainMaker app looks for when scanning.
@@ -141,6 +135,14 @@ void sysProvEvent(arduino_event_t *sys_event);
 void write_callback(Device *device, Param *param, const param_val_t val, void *priv_data, write_ctx_t *ctx);
 void requestDoor(int8_t target, const char *source);
 void enterFault(const char *msg);
+
+// On core 3.x, BLE provisioning can start in freed Bluetooth RAM unless this
+// returns true. It sits below the type definitions on purpose: the Arduino IDE
+// inserts its auto-generated prototypes just above the first function in the
+// sketch, and they need Input and the other types to be declared already.
+bool btInUse() {
+  return true;
+}
 
 // ---- Globals --------------------------------------------------------------------
 Servo servo;
