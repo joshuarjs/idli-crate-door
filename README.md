@@ -4,6 +4,8 @@ A motorized dog-crate door for Idli, built on an **ESP32-C6 SuperMini** and cont
 
 A continuous-rotation MG996R servo drives the door through a worm gear and a torque-limiting clutch. Limit switches stop it at the open and closed positions, and a momentary button on top of the opener lets you operate it by hand. A long press on the button also fires a virtual contact sensor that can start any Alexa routine, such as a smart feeder.
 
+![The opener mounted on top of Idli's crate](images/installed.jpg)
+
 ---
 
 ## Features
@@ -33,23 +35,36 @@ A continuous-rotation MG996R servo drives the door through a worm gear and a tor
 | Worm gear and torque-limiting clutch | The worm gear holds the door when the motor is off; the clutch limits force if the door is blocked |
 | 2× limit switches | Normally open, one at each end of travel |
 | Momentary pushbutton | Normally open, mounted on top of the opener |
-| 5 V supply, 3 A or more | For the servo; the MG996R can draw over 2 A at stall |
-| 470–1000 µF electrolytic capacitor | Across the servo supply, close to the servo |
+| 12 V DC adapter | Main power input through a panel-mount barrel jack |
+| LM2596 buck converter, set to 6.5 V | Powers the servo (the MG996R is rated 4.8–7.2 V) |
+| Mini360 buck converter, set to 5 V | Powers the ESP32-C6 SuperMini through its 5 V pin |
+| Logic level shifter | Raises the ESP32's 3.3 V servo signal to a level the servo reads reliably |
+| 470–1000 µF electrolytic capacitor (recommended) | Across the servo supply, close to the servo, to absorb current spikes |
+
+### Photos
+
+| CAD model | Inside, top view |
+| --- | --- |
+| ![CAD model of the enclosure with the door hook](images/render.jpg) | ![Internals from above: worm gear and clutch, servo, buck converter and ESP32-C6](images/internals-top.jpg) |
+
+| Inside, angled | Inside, from the electronics side |
+| --- | --- |
+| ![Internals at an angle showing the worm drive and limit switch](images/internals-angle.jpg) | ![Internals showing the ESP32-C6 SuperMini and the button](images/internals-side.jpg) |
 
 ### Wiring
 
 | ESP32-C6 pin | Connects to |
 | --- | --- |
-| GPIO1 | Servo signal |
+| GPIO1 | Servo signal, through the level shifter |
 | GPIO15 | Open limit switch (other side to GND) |
 | GPIO18 | Closed limit switch (other side to GND) |
 | GPIO19 | Pushbutton (other side to GND) |
 | GPIO8 | Onboard RGB LED (hidden in the enclosure, kept off) |
-| GND | Servo supply ground (**common ground is required**) |
+| GND | Common ground for both buck converters, the level shifter and the servo (**required**) |
 
 All inputs use the ESP32's internal pull-ups, so a pressed or triggered switch reads `LOW`.
 
-Power the servo from its own 5 V supply rather than the SuperMini's 5 V pin, and tie the grounds together.
+The servo runs from the LM2596 at 6.5 V and the ESP32 from the Mini360 at 5 V, so motor current spikes stay off the ESP32's supply. Set both converters with a meter before connecting anything; an LM2596 left at a high setting will destroy the servo.
 
 ---
 
@@ -146,7 +161,8 @@ If the door runs the wrong way, swap `SERVO_OPEN` and `SERVO_CLOSE`, or swap the
 ## Troubleshooting
 
 - **Servo creeps or hums when stopped:** adjust `SERVO_STOP` (try 88–92) or the servo's centering trim.
-- **Board resets when the door moves:** use a separate 5 V supply for the servo, a common ground, and the bulk capacitor.
+- **Board resets when the door moves:** check the common ground between the two converters and add the bulk capacitor across the servo supply.
+- **Servo twitches or ignores commands:** check the level shifter's low-voltage side is powered from 3.3 V, its high-voltage side from 5 V or the servo supply, and that it shares the common ground.
 - **OTA update reverts after a reboot:** the new firmware confirms itself after 30 s on Wi-Fi; make sure it stays powered and connected that long after updating.
 - **Device not found during provisioning:** check Bluetooth is on, then erase flash and reflash.
 - **Alexa doesn't see the door:** confirm it's online in the RainMaker app, then run *Discover Devices* again.
@@ -165,4 +181,4 @@ Provisioning code is based on Espressif's ESP RainMaker Arduino examples.
 
 ## License
 
-MIT (or choose your preferred license and add a `LICENSE` file).
+MIT, see [LICENSE](LICENSE).
