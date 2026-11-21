@@ -75,8 +75,8 @@ The servo runs from the LM2596 at 6.5 V and the ESP32 from the Mini360 at 5 V, s
 | Component | Version |
 | --- | --- |
 | Arduino IDE | 2.x |
-| ESP32 Arduino core (Espressif) | 3.3.7 |
-| ESP32Servo (Kevin Harrington) | 3.1.3 |
+| ESP32 Arduino core (Espressif) | 3.3.12 |
+| ESP32Servo (Kevin Harrington) | 3.2.1 |
 
 ESP RainMaker, WiFiProv, Preferences and AppInsights are included with the ESP32 core.
 
