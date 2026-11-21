@@ -4,7 +4,7 @@ A motorized dog-crate door for Idli, built on an **ESP32-C6 SuperMini** and cont
 
 A continuous-rotation MG996R servo drives the door through a worm gear and a torque-limiting clutch. Limit switches stop it at the open and closed positions, and a momentary button on top of the opener lets you operate it by hand. A long press on the button also fires a virtual contact sensor that can start any Alexa routine, such as a smart feeder.
 
-![The opener mounted on top of Idli's crate](images/installed.jpg)
+![The opener mounted on top of Idli's crate](installed.jpg)
 
 ---
 
@@ -45,11 +45,11 @@ A continuous-rotation MG996R servo drives the door through a worm gear and a tor
 
 | CAD model | Inside, top view |
 | --- | --- |
-| ![CAD model of the enclosure with the door hook](images/render.jpg) | ![Internals from above: worm gear and clutch, servo, buck converter and ESP32-C6](images/internals-top.jpg) |
+| ![CAD model of the enclosure with the door hook](render.jpg) | ![Internals from above: worm gear and clutch, servo, buck converter and ESP32-C6](internals-top.jpg) |
 
 | Inside, angled | Inside, from the electronics side |
 | --- | --- |
-| ![Internals at an angle showing the worm drive and limit switch](images/internals-angle.jpg) | ![Internals showing the ESP32-C6 SuperMini and the button](images/internals-side.jpg) |
+| ![Internals at an angle showing the worm drive and limit switch](internals-angle.jpg) | ![Internals showing the ESP32-C6 SuperMini and the button](internals-side.jpg) |
 
 ### Wiring
 
